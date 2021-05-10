@@ -43,17 +43,12 @@ module.exports = {
             let _ = await guildCT.findOne({_id: code});
             if (!_) break;
         }
-        console.log(code);
+
         await guildCT.insertOne({
             _id: code,
             auth: false,
             userID: message.author.id,
         });
-        // await client.db.main.findOneAndUpdate({_id: message.guild.id}, {
-        //     $push: {
-        //         granted: to
-        //     }
-        // });
 
         mail.send(mail.createMailOption(to, "디스코드 Auth 봇 인증", `https://auth-bot.sujang.repl.co/auth?userID=${message.author.id}&guildID=${message.guild.id}&code=${code}`));
 
