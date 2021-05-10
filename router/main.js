@@ -1,6 +1,9 @@
 const { default: fetch } = require('node-fetch');
 const log = require('../util/log');
 const path = require('path');
+const { dec } = require('../util/encrypDecryp');
+
+require('dotenv').config();
 
 module.exports =
 /**
@@ -20,7 +23,7 @@ app => {
         const guildCT = app.db.db.collection(guildID);
         const guildDB = await app.db.main.findOne({_id: guildID});
         const codeDB = await guildCT.findOne({_id: code});
-
+        
         if (!guildDB || !guildCT)
             return res.send('<h2>잘못된 요청입니다!</h2>');
         if (!guildDB.role)
@@ -34,13 +37,15 @@ app => {
         
         try {
             await guildCT.updateOne({_id: code}, {
-                auth: true,
+                $set: {
+                    auth: true,
+                }
             });
         
             const role_res = await fetch(`https://discord.com/api/v8/guilds/${guildID}/members/${userID}/roles/${guildDB.role}`, {
                 method: 'PUT',
                 headers: {
-                    Authorization: `Bot ${cryptFunctions.dec(process.env.TOKEN)}`,
+                    Authorization: `Bot ${dec(process.env.TOKEN)}`,
                 }
             });
             
@@ -53,5 +58,5 @@ app => {
             console.log(e);
             return res.send(`<script>alert("에러\n${e.toString()}");location.href='/';</script>`);
         }
-    })
+    });
 }

@@ -43,87 +43,23 @@ module.exports = {
             let _ = await guildCT.findOne({_id: code});
             if (!_) break;
         }
-            
+        console.log(code);
         await guildCT.insertOne({
             _id: code,
             auth: false,
-            userID: message.author.tag,
+            userID: message.author.id,
         });
-        await client.db.main.findOneAndUpdate({_id: guildID}, {
-            $push: {
-                granted: to
-            }
-        });
+        // await client.db.main.findOneAndUpdate({_id: message.guild.id}, {
+        //     $push: {
+        //         granted: to
+        //     }
+        // });
 
         mail.send(mail.createMailOption(to, "디스코드 Auth 봇 인증", `https://auth-bot.sujang.repl.co/auth?userID=${message.author.id}&guildID=${message.guild.id}&code=${code}`));
 
         return message.reply('메일을 보냈습니다! 메일로 보낸 링크를 확인하세요');
     }
 }
-
-// module.exports = {
-//     name: "인증",
-//     aliases: ["auth", "dlswmd"],
-//     /**
-//      * @param {Message} message 
-//      */
-//     async run(message, args, client) {
-//         var db = low(new FileSync(`${__dirname}/../auth.json`));
-//         var userId = message.author.id;
-//         var guildId = message.guild.id;
-//         var code = shortId.generate();
-//         var to = args[0];
-//         var chkDB = db.get(guildId).value();
-
-
-//         if (chkDB != undefined) {
-//             if (chkDB.hasOwnProperty('role')) {
-//                 var roleId = chkDB.role;
-//             } else {
-//                 message.reply('역할이 설정되어있지 않습니다!\n `auth!역할 (역할 멘션)`\n으로 역할을 설정해주세요!');
-//                 return;
-//             }
-//         } else {
-//             message.reply('역할이 설정되어있지 않습니다!\n `auth!역할 (역할 멘션)`\n으로 역할을 설정해주세요!');
-//             return;
-//         }
-        
-
-
-//         if (chkDB != undefined) {
-//             if (!isEmail(to)) {
-//                 message.reply('이메일을 입력해주세요!')
-//                 return;
-//             }
-//             console.log(chkDB[to.replace('.', '')] == undefined);
-
-//             try {
-//                 if (!chkDB[to.replace('.', '')]) {
-//                     db.get(guildId).set(code, {
-//                         userID: userId,
-//                         code: code,
-//                         auth: false
-//                     }).write()
-//                     db.get(guildId).set(`${to.replace('.', '')}`, true).write()
-
-//                     var option = mail.createMailOption(to, "디스코드 Auth 봇 인증", `https://discord-2fa-auth.herokuapp.com/auth?userID=${userId}&guildID=${guildId}&code=${code}`);
-//                     mail.send(option);
-
-//                     message.reply(`${args[0]} 로 이메일을 보냈습니다!\n이메일로 보낸 링크로 들어가서 인증을 완료하세요`);
-//                     return;
-//                 } else {
-//                     message.reply('진행중이거나 이미 했습니다!');
-//                     return;
-//                 }          
-//             } catch (e) {
-//                 console.log(e);
-//                 message.reply('erorr :(');
-//             }
-//         }    
-//     }    
-// }
-
-
 
 function isEmail(asValue) {
 	var regExp = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
